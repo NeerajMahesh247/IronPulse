@@ -1,0 +1,55 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Optional admin authorization check via Firebase Custom Claims
+    function isAdmin() {
+      return isAuthenticated() && request.auth.token.admin == true;
+    }
+
+    // -------------------------------------------------------------
+    // USERS COLLECTION: users/{userId}
+    // Strict isolation: User A can only read/write users/UserA_UID
+    // -------------------------------------------------------------
+    match /users/{userId} {
+      // 1. Single document read (Get profile):
+      // Only the authenticated owner or admin can read this specific document
+      allow get: if isOwner(userId) || isAdmin();
+
+      // 2. Collection queries (List users):
+      // Denied for standard users to prevent exposing all registered users.
+      // Only allowed if user has the admin custom claim.
+      allow list: if isAdmin();
+
+      // 3. Document Creation (Signup / Initial Profile Creation on Login):
+      // Allowed only if authenticated user's UID matches document ID
+      allow create: if isOwner(userId)
+                    && request.resource.data.uid == request.auth.uid
+                    && request.resource.data.email is string;
+
+      // 4. Document Update (Login timestamp sync & profile updates):
+      // Allowed only for the owner; prevents modifying immutable fields (uid, createdAt)
+      allow update: if isOwner(userId)
+                    && request.resource.data.uid == resource.data.uid
+                    && (!('createdAt' in resource.data) || request.resource.data.createdAt == resource.data.createdAt);
+
+      // 5. Document Deletion:
+      allow delete: if isOwner(userId) || isAdmin();
+    }
+
+    // Default deny for all other database paths
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
