@@ -4,12 +4,14 @@ import { SignalSparkline } from '../ui/SignalSparkline';
 import { useMockTelemetry } from '../../hooks/useMockTelemetry';
 import { Play, Pause, RefreshCw, Maximize2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import type { Machine } from '../../types/machine';
 
 interface DashboardPreviewProps {
   telemetry: ReturnType<typeof useMockTelemetry>;
+  selectedMachine?: Machine | null;
 }
 
-export const DashboardPreview: React.FC<DashboardPreviewProps> = ({ telemetry }) => {
+export const DashboardPreview: React.FC<DashboardPreviewProps> = ({ telemetry, selectedMachine }) => {
   const { metrics, history, isAnomalyMode, isPaused, toggleAnomalyMode, togglePause } = telemetry;
   const [activeChannel, setActiveChannel] = useState<'all' | 'thermal' | 'current' | 'voltage' | 'power'>('all');
 
@@ -44,8 +46,8 @@ export const DashboardPreview: React.FC<DashboardPreviewProps> = ({ telemetry })
           {/* Dashboard Window Header */}
           <div className="px-4 py-3 bg-iron-950 border-b border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs font-mono">
             <div className="flex items-center gap-3">
-              <span className="text-slate-300 font-semibold">
-                IRON PULSE // MOTOR DIAGNOSTICS CONSOLE
+              <span className="text-slate-300 font-semibold truncate max-w-[280px] sm:max-w-none">
+                IRON PULSE // {selectedMachine ? `${selectedMachine.machineName.toUpperCase()} [${selectedMachine.machineId}]` : 'MOTOR DIAGNOSTICS CONSOLE'}
               </span>
               <span className="px-2 py-0.5 rounded bg-iron-900 text-[10px] text-sky-400 border border-slate-800">
                 LIVE HARDWARE TELEMETRY
