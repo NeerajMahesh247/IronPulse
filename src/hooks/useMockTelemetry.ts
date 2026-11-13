@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import type { TelemetryPoint, MotorHealthMetrics, MotorAlert, TelemetryStatus } from '../types/telemetry';
 
-const TELEMETRY_API_URL = 'http://localhost:5000/telemetry';
+const TELEMETRY_API_URL = `${import.meta.env.VITE_API_URL}/telemetry`;
 
 interface LiveTelemetryResponse {
   temperature?: number | string;
@@ -228,8 +228,8 @@ export function useMockTelemetry() {
           tempStatus === 'critical'
             ? 'Critical thermal warning: Surface sensor reading exceeds safety limit (70 °C)'
             : tempStatus === 'attention'
-            ? 'Thermal gradient elevated above continuous duty rating'
-            : 'Operating well within Class F insulation limits',
+              ? 'Thermal gradient elevated above continuous duty rating'
+              : 'Operating well within Class F insulation limits',
       },
       current: {
         value: latestPoint.current,
@@ -242,8 +242,8 @@ export function useMockTelemetry() {
           currentStatus === 'critical'
             ? 'Severe overcurrent detected exceeding safe operating limits'
             : currentStatus === 'attention'
-            ? 'Abnormal current consumption exceeding nominal baseline'
-            : 'Phase current draw matching nominal baseline',
+              ? 'Abnormal current consumption exceeding nominal baseline'
+              : 'Phase current draw matching nominal baseline',
       },
       voltage: {
         value: latestPoint.voltage,
@@ -256,8 +256,8 @@ export function useMockTelemetry() {
           voltageStatus === 'critical'
             ? 'Severe supply voltage instability detected'
             : voltageStatus === 'attention'
-            ? 'Supply voltage deviation outside optimal range'
-            : 'Maintained within standard ±5% supply tolerance',
+              ? 'Supply voltage deviation outside optimal range'
+              : 'Maintained within standard ±5% supply tolerance',
       },
       power: {
         value: latestPoint.power,
