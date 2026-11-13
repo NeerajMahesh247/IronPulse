@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import type { TelemetryPoint, MotorHealthMetrics, MotorAlert, TelemetryStatus } from '../types/telemetry';
 
-const TELEMETRY_API_URL = `${import.meta.env.VITE_API_URL}/telemetry`;
+const TELEMETRY_API_URL = "https://drag-sussex-brighton-locked.trycloudflare.com/telemetry";
 
 interface LiveTelemetryResponse {
   temperature?: number | string;
